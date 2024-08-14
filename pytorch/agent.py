@@ -79,6 +79,8 @@ class QAgent():
             # t.max(1) will return largest column value of each row.
             # second column on max result is index of where max element was
             # found, so we pick action with the larger expected reward.
+            if type(state) is tuple:
+                state = state[0] 
             predicted = self.model(torch.tensor([state], device=self.device))
             action = predicted.max(1)[1]
         return action.item()
@@ -138,6 +140,10 @@ class QAgent():
         self.target_model.load_state_dict(self.model.state_dict())
 
     def _remember(self, state, action, next_state, reward, done):
+        if type(state) is tuple:
+            state = state[0]
+        if type(next_state) is tuple:
+            next_state = next_state[0]
         self.memory.push(torch.tensor([state], device=self.device),
                         torch.tensor([action], device=self.device, dtype=torch.long),
                         torch.tensor([next_state], device=self.device),
@@ -181,7 +187,7 @@ class QAgent():
                 for step in count():
                     # Select and perform an action
                     action = self._choose_action(state, epsilon)
-                    next_state, reward, done, _ = self.env.step(action)
+                    next_state, reward, done, filler, _ = self.env.step(action)
 
                     # Store the transition in memory
                     self._remember(state, action, next_state, reward, done)
