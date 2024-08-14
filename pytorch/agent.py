@@ -365,7 +365,7 @@ class QAgent():
             while not done:
                 action = self._get_action_for_state(state)
                 iteration += 1
-                state, reward, done, info = self.env.step(action)
+                state, reward, done, filler, info = self.env.step(action)
                 display.clear_output(wait=True)
                 self.env.render()
                 if verbose:
